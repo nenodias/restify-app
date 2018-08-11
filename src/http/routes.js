@@ -1,37 +1,69 @@
-const exemplo = () => {
-  return new Promise((resolve, reject) => {
-    let tempo = 10000;
-    setTimeout(() => {
-      resolve(`Olá depois de ${tempo}`);
-    }, tempo);
-  });
-};
+const Aluno = require('../models/Aluno');
 
 const routes = (server) => {
   server.get('/', (req, res, next) => {
     res.send('Hello world');
-    next();
+    return next();
   });
 
-  server.get('/categoria/:id?', async (req, res, next) => {
+  server.get('/alunos/:id', async (req, res, next) => {
+    let aluno = null;
     if (req.params.id) {
-      const { id } = req.params;// Request Params
-      console.log(id);
+      aluno = await Aluno.findById(req.params.id);
+      if(aluno){
+        res.json(aluno);
+      }
     }
-    const { name } = req.query;// Query Params
-    let msg = await exemplo();
-    res.send(msg + ' ' + name);
-    await next();
+    if(!aluno){
+      res.status(404);
+      res.json({message:'not found'});
+    }
+    return await next();
   });
-  server.post('/categoria', async (req, res, next) => {
-    await next();
+  server.get('/alunos', async (req, res, next) => {
+    try{
+      let alunos = await Aluno.find();
+      res.json(alunos);
+    }catch({message}){
+      console.error(message);
+      res.json({message});
+      res.status(500);
+    }
+    return await next();
   });
-  // server.put('/categoria', async (req, res, next) => {
-  //   next();
-  // });
-  // server.delete('/categoria', async (req, res, next) => {
-  //   next();
-  // });
+
+  server.post('/alunos', async (req, res, next) => {
+    let aluno = new Aluno(req.body);
+    try{
+      aluno = await aluno.save();
+      res.json(aluno);
+    }catch({message}){
+      console.error(message);
+      res.json({message});
+      res.status(500);
+    }
+    return await next();
+  });
+
+  server.put('/alunos/:id', async (req, res, next) => {
+    let aluno = null;
+    if (req.params.id) {
+      const { id } = req.params;
+      const { _id, createdAt, updatedAt, ...dados} = req.body;
+      result = await Aluno.update({_id: id}, dados);
+      if(result.ok){
+        aluno = await Aluno.findById(id);
+        if(aluno){
+          res.json(aluno);
+        }
+      }
+    }
+    if(!aluno){
+      res.status(404);
+      res.json({message:'not found'});
+    }
+    return await next();
+  });
 };
 
 module.exports = routes;
