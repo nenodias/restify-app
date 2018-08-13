@@ -64,6 +64,23 @@ const routes = (server) => {
     }
     return await next();
   });
+
+  server.del('/alunos/:id', async (req, res, next) => {
+    let okay = false;
+    if (req.params.id) {
+      const { id } = req.params;
+      result = await Aluno.deleteOne({_id: id});
+      if(result.ok){
+        okay = true;
+        res.json({message:'deleted'});
+      }
+    }
+    if(!okay){
+      res.status(404);
+      res.json({message:'not found'});
+    }
+    return await next();
+  });
 };
 
 module.exports = routes;
