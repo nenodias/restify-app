@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^5.2.7",
-    "mongoose-string-query": "^0.2.5",
+    "mongoose": "^5.13.10",
+    "mongoose-string-query": "^0.2.7",
     "mongoose-timestamp": "^0.6.0",
     "restify": "^7.2.0",
     "restify-cors-middleware": "^1.1.1"
